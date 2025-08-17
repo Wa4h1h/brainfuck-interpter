@@ -27,3 +27,8 @@ go.work.sum
 # Goland
 .idea
 dist/
+
+
+# air
+bin
+tmp
