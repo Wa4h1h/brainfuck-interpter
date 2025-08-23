@@ -3,6 +3,6 @@ fmt:
 	@gofumpt -l -w .
 
 build: test
-	go build -o bfi main.go
+	@go build -o bfi main.go
 test:
-	go test -v ./...
+	@go test -v ./...

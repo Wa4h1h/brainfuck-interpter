@@ -1,35 +1,52 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
 
+	"github.com/Wa4h1h/brainfuck-interpter/evaluator"
 	"github.com/Wa4h1h/brainfuck-interpter/repl"
 )
 
-func main() {
-	var bfSrc string
+const memorySize = 30000
 
-	flag.StringVar(&bfSrc, "bf-src", "", "bf file path")
+func main() {
+	var (
+		useRepl bool
+		exec    string
+		memSize int
+	)
+
+	flag.BoolVar(&useRepl, "repl", false, "start repl")
+	flag.StringVar(&exec, "exec", "", "bf file to execute")
+	flag.IntVar(&memSize, "mem-size", memorySize, "memory size")
 
 	flag.Parse()
 
-	if len(bfSrc) != 0 {
-		content, err := os.ReadFile(bfSrc)
+	if useRepl {
+		err := repl.Start(os.Stdin, os.Stdout)
 		if err != nil {
-			fmt.Fscanln(os.Stderr, err)
-
-			return
+			fmt.Fprintln(os.Stderr, err)
 		}
-
-		fmt.Fprintln(os.Stdout, string(content))
 
 		return
 	}
 
-	err := repl.Start(os.Stdin, os.Stdout)
-	if err != nil {
-		fmt.Fscanln(os.Stderr, err)
+	e := evaluator.New(memSize)
+
+	if len(exec) != 0 {
+		content, err := os.ReadFile(exec)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+
+			return
+		}
+
+		err = e.Evaluate(bytes.NewReader(content))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
 	}
 }
